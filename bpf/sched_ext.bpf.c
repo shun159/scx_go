@@ -26,7 +26,7 @@
 #include <bpf/bpf_helpers.h>
 #include <bpf/bpf_tracing.h>
 
-#include "scx_helper.h"
+#include "common.bpf.h"
 
 char _license[] SEC("license") = "GPL";
 
@@ -162,10 +162,15 @@ BPF_STRUCT_OPS_SLEEPABLE(simple_init)
   return scx_bpf_create_dsq(SHARED_DSQ, -1);
 }
 
+void
+BPF_STRUCT_OPS(simple_exit, struct scx_exit_info *ei)
+{
+}
+
 SCX_OPS_DEFINE(simple_sched1, .select_cpu = (void *)simple_select_cpu,
                .enqueue = (void *)simple_enqueue,
                .dispatch = (void *)simple_dispatch,
                .running = (void *)simple_running,
                .stopping = (void *)simple_stopping,
                .enable = (void *)simple_enable, .init = (void *)simple_init,
-               .timeout_ms = 20000, .flags = 1, .name = "simple_sched1", );
+               .exit = (void *)simple_exit, .name = "simple_sched1", );
